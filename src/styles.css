@@ -67,6 +67,8 @@
   --color-cyan: var(--cyan);
   --color-cyan-muted: var(--cyan-muted);
   --color-warning: var(--warning);
+  --color-silver: var(--silver);
+  --color-silver-glow: var(--silver-glow);
   --color-warning-muted: var(--warning-muted);
   --color-lab-background: var(--lab-background);
   --color-lab-surface: var(--lab-surface);
@@ -111,6 +113,8 @@
   --cyan-muted: oklch(0.2 0.045 219);
   --warning: oklch(0.8 0.16 80);
   --warning-muted: oklch(0.22 0.05 73);
+  --silver: oklch(0.88 0.01 250);
+  --silver-glow: color-mix(in oklab, oklch(0.9 0.02 230) 35%, transparent);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
