@@ -10,3 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Keep Core Labs in an isolated frontend component with scoped semantic tokens and local simulation state; research visuals must not imply real interception, forecasting, or verified IP valuation.
+- Keep the primary scanner and pricing in focused frontend components; reuse the existing audit function and label its output as simulated because it does not read repository source.
+- Keep pricing terms and repository normalization in a browser-safe module with behavior tests so displayed terms and input validation remain consistent.
