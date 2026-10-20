@@ -206,6 +206,16 @@
   text-shadow: 0 0 18px var(--primary-glow);
 }
 
+@keyframes audit-trigger-pulse {
+  0%, 100% { box-shadow: 0 0 16px var(--primary-glow); }
+  50% { box-shadow: 0 0 32px var(--primary-glow); }
+}
+.audit-trigger:not(:disabled) { animation: audit-trigger-pulse 2.4s ease-in-out infinite; }
+.pillar-grid {
+  background-image: linear-gradient(color-mix(in oklab, var(--silver) 5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in oklab, var(--silver) 5%, transparent) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
 @keyframes audit-flash {
   0%, 100% { box-shadow: 0 0 0 0 transparent; }
   50% { box-shadow: 0 0 30px color-mix(in oklab, var(--warning) 32%, transparent); }

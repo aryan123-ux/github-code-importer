@@ -13,21 +13,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { AuthDialog } from "@/components/auth-dialog";
+import { AuditScanner } from "@/components/audit-scanner";
+import { DashboardPricing } from "@/components/dashboard-pricing";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "API Sentinel — Deep-Tech Control Dashboard" },
+      { title: "API Sentinel — Free Code Audit Scanner" },
       {
         name: "description",
         content:
-          "Continuous API monitoring, post-quantum security, and distributed self-healing in one minimal dashboard.",
+          "Preview a GitHub API code audit with API Sentinel, explore three deep-tech cores, and compare Startup and Enterprise plans.",
       },
-      { property: "og:title", content: "API Sentinel — Deep-Tech Control Dashboard" },
+      { property: "og:title", content: "API Sentinel — Free Code Audit Scanner" },
       {
         property: "og:description",
         content:
-          "Continuous API monitoring, post-quantum security, and distributed self-healing in one minimal dashboard.",
+          "Preview a GitHub API code audit with API Sentinel, explore three deep-tech cores, and compare Startup and Enterprise plans.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -76,9 +78,9 @@ function Pillar({
   children: ReactNode;
 }) {
   return (
-    <section className="flex flex-col overflow-hidden rounded-lg border border-terminal-border bg-terminal-panel">
-      <header className="flex items-start justify-between gap-3 border-b border-terminal-border p-5">
-        <div className="flex gap-3">
+    <section className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-silver/20 bg-terminal-panel">
+      <header className="flex min-h-32 flex-wrap items-start justify-between gap-3 border-b border-silver/15 p-5">
+        <div className="flex min-w-0 flex-1 gap-3">
           <div className="grid size-9 shrink-0 place-items-center rounded-md border border-silver/30 text-silver">
             {icon}
           </div>
@@ -91,7 +93,7 @@ function Pillar({
         </div>
         <StatusBadge>{badge}</StatusBadge>
       </header>
-      <div className="flex-1 bg-[linear-gradient(var(--terminal-muted)_1px,transparent_1px),linear-gradient(90deg,var(--terminal-muted)_1px,transparent_1px)] bg-[size:22px_22px] p-5 font-mono text-xs text-terminal">
+      <div className="pillar-grid min-w-0 flex-1 p-5 font-mono text-xs text-silver">
         {children}
       </div>
     </section>
@@ -109,11 +111,11 @@ function MonitoringCore() {
         return (
           <li key={name} className="flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <span className="signal-pulse size-1.5 rounded-full bg-terminal-bright" />
+              <span className="signal-pulse size-1.5 rounded-full bg-silver" />
               {name}
             </span>
             <span className="text-muted-foreground">
-              200 · <span className="text-terminal-bright">{latency}ms</span>
+              200 · <span className="text-silver">{latency}ms</span>
             </span>
           </li>
         );
@@ -128,7 +130,7 @@ function PqcLattice() {
   const hex = (n: number) => ((n * 2654435761) >>> 0).toString(16).padStart(8, "0");
   return (
     <div className="space-y-3">
-      <p className="text-silver">🔒 Post-Quantum Cryptography Enabled</p>
+      <p className="leading-5 text-silver">🔒 Post-Quantum Cryptography Enabled via CRYSTALS-Kyber</p>
       <dl className="space-y-1.5">
         {[
           ["KEM", "CRYSTALS-Kyber-1024"],
@@ -138,7 +140,7 @@ function PqcLattice() {
         ].map(([k, v]) => (
           <div key={k} className="flex justify-between gap-3">
             <dt className="text-muted-foreground">{k}</dt>
-            <dd className="truncate text-terminal-bright">{v}</dd>
+            <dd className="min-w-0 break-words text-right text-silver">{v}</dd>
           </div>
         ))}
       </dl>
@@ -167,10 +169,10 @@ function SelfHealingCore() {
   const visible = Array.from({ length: 5 }, (_, i) => telemetry[(tick + i) % telemetry.length]);
   return (
     <div className="space-y-3">
-      <p className="text-silver">&gt; One System Fixes, All Nodes Learn</p>
+      <p className="leading-5 text-silver">&gt; One System Fixes, All Nodes Learn</p>
       <ul className="space-y-1.5">
         {visible.map((line, i) => (
-          <li key={`${tick}-${i}`} className={i === 4 ? "text-terminal-bright" : "text-terminal/70"}>
+          <li key={`${tick}-${i}`} className={`break-words leading-5 ${i === 4 ? "text-silver" : "text-muted-foreground"}`}>
             [{String((tick + i) % 1000).padStart(3, "0")}] {line}
           </li>
         ))}
@@ -222,15 +224,16 @@ function Dashboard() {
         </div>
       )}
 
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+        <AuditScanner />
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-t border-silver/15 pt-7">
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
               CORE SYSTEMS
             </p>
-            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Deep-Tech Control Plane</h1>
+            <p className="mt-2 text-xl font-bold">Three cores. One sentinel.</p>
           </div>
-          <StatusBadge>All systems nominal</StatusBadge>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Simulated telemetry · Research preview</span>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -238,7 +241,7 @@ function Dashboard() {
             index="01"
             icon={<Activity className="size-4" />}
             title="24/7 Continuous API Surface Monitoring Core"
-            badge="Live"
+            badge="Live tracker"
           >
             <MonitoringCore />
           </Pillar>
@@ -259,6 +262,7 @@ function Dashboard() {
             <SelfHealingCore />
           </Pillar>
         </div>
+        <DashboardPricing />
       </div>
 
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} />
