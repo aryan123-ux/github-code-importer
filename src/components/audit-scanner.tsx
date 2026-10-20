@@ -77,7 +77,7 @@ export function AuditScanner() {
           {error && <p id="audit-error" role="alert" className="mt-3 flex items-center gap-2 text-sm text-destructive"><TriangleAlert className="size-4" />{error}</p>}
           {(busy || report) && <div role="status" className="mt-5 space-y-2 border-l border-silver/30 pl-4 font-mono text-xs text-silver">
             <p className="flex items-center gap-2">{stage === "rechecking" && <Loader2 className="size-3 animate-spin" />}Rechecking code matrix [Step 1/2]...{rechecked && <span className="text-muted-foreground">complete</span>}</p>
-            {(rechecked || stage === "verifying") && <p className="flex items-center gap-2">{stage === "verifying" && <Loader2 className="size-3 animate-spin" />}Verifying endpoint integrity [Step 2/2]...{report?.status === "verified" && <span className="text-muted-foreground">2 passes complete</span>}</p>
+            {(rechecked || stage === "verifying") && <p className="flex items-center gap-2">{stage === "verifying" && <Loader2 className="size-3 animate-spin" />}Verifying endpoint integrity [Step 2/2]...{report?.status === "verified" && <span className="text-muted-foreground">2 passes complete</span>}</p>}
           </div>}
           {report && (
             <div className="mt-6 border-y border-silver/20 py-5">
