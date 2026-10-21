@@ -8,12 +8,13 @@
 - [x] Verify scanner interaction, layout, and error reports.
 
 # Verified repository audits
-- [ ] Fetch public repository dependency tree and OpenAPI/Swagger contracts at a pinned commit.
-- [ ] Enforce dependency re-check and two signature checks before hotfix generation.
-- [ ] Display real verification stages and fail-closed results in the scanner.
-- [ ] Test verification rules and exercise the scanner end-to-end.
+- [x] Fetch public repository dependency tree and OpenAPI/Swagger contracts at a pinned commit.
+- [x] Enforce dependency re-check and two signature checks before hotfix generation.
+- [x] Display real verification stages and fail-closed results in the scanner.
+- [x] Test verification rules and exercise the scanner fail-closed path.
 
 # Private distributed telemetry
-- [ ] Persist only abstract patch vectors with owner-only access.
-- [ ] Connect verified audit recommendations and third-pillar pulse states.
-- [ ] Test privacy rules and verify authenticated telemetry readback.
+- [x] Persist only abstract patch vectors with owner-only access.
+- [x] Connect verified audit recommendations and third-pillar pulse states.
+- [x] Test abstraction rules, database access restrictions, and signed-out UI.
+- [ ] Verify authenticated telemetry readback and cross-user access: blocked because no account exists; sign in required.
