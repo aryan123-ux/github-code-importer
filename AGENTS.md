@@ -13,3 +13,4 @@
 - Keep the primary scanner and pricing in focused frontend components; audit public repositories at a pinned commit and label its limited static coverage, never substitute simulated verification.
 - Keep pricing terms and repository normalization in a browser-safe module with behavior tests so displayed terms and input validation remain consistent.
 - Keep repository fetching in a server-only helper using bounded fixed-host requests; require dependency re-check and two fresh contract signature checks before returning any solution, including direct audit RPC calls.
+- Persist patch pulses through authenticated audit orchestration using the caller's RLS client and claim-derived owner; store only coarse numeric vectors and read only owner-scoped rows, so telemetry never pools tenant content. Public audits remain untracked; pulse completion requires database readback and means simulation, not real model training.

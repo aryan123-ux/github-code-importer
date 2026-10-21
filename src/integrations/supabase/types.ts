@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      patch_telemetry: {
+        Row: {
+          created_at: string
+          id: string
+          patch_vector: number[]
+          simulation: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          patch_vector: number[]
+          simulation?: boolean
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          patch_vector?: number[]
+          simulation?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

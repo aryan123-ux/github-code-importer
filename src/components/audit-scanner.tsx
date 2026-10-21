@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { recheckRepoDependencies, runRepoAudit, type AuditReport } from "@/lib/audit.functions";
 import { parseGitHubRepository } from "@/lib/dashboard";
+import { runPrivatePatchAudit } from "@/lib/patch-telemetry.functions";
+import { useAuth } from "@/hooks/use-auth";
 
-export function AuditScanner() {
+export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, stored?: boolean) => void }) {
+  const { signedIn } = useAuth();
   const [repo, setRepo] = useState("");
   const [scannedRepo, setScannedRepo] = useState("");
   const [busy, setBusy] = useState(false);
@@ -16,6 +19,8 @@ export function AuditScanner() {
   const [rechecked, setRechecked] = useState(false);
   const recheck = useServerFn(recheckRepoDependencies);
   const audit = useServerFn(runRepoAudit);
+  const privateAudit = useServerFn(runPrivatePatchAudit);
+  const [telemetryError, setTelemetryError] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -24,6 +29,7 @@ export function AuditScanner() {
     setReport(null);
     setStage(null);
     setRechecked(false);
+    setTelemetryError(false);
     if (!normalized) {
       setError("Enter a GitHub repository URL or owner/repository.");
       return;
@@ -40,12 +46,21 @@ export function AuditScanner() {
       }
       setRechecked(true);
       setStage("verifying");
-      setReport(await audit({ data: { repo: normalized, commit: dependencyResult.commit } }));
+      if (signedIn) {
+        onPatchSync(true);
+        const result = await privateAudit({ data: { repo: normalized, commit: dependencyResult.commit } });
+        setReport(result.report);
+        setTelemetryError(result.telemetry === "failed");
+        onPatchSync(false, result.telemetry === "stored");
+      } else {
+        setReport(await audit({ data: { repo: normalized, commit: dependencyResult.commit } }));
+      }
     } catch {
       setError("Repository verification couldn't finish. Hotfix blocked. Please try again.");
     } finally {
       setBusy(false);
       setStage(null);
+      onPatchSync(false);
     }
   }
 
@@ -75,6 +90,7 @@ export function AuditScanner() {
         </div>
         <div aria-live="polite">
           {error && <p id="audit-error" role="alert" className="mt-3 flex items-center gap-2 text-sm text-destructive"><TriangleAlert className="size-4" />{error}</p>}
+          {telemetryError && <p role="alert" className="mt-3 text-xs text-warning">Audit finished, but the private training pulse could not be stored.</p>}
           {(busy || report) && <div role="status" className="mt-5 space-y-2 border-l border-silver/30 pl-4 font-mono text-xs text-silver">
             <p className="flex items-center gap-2">{stage === "rechecking" && <Loader2 className="size-3 animate-spin" />}Rechecking code matrix [Step 1/2]...{rechecked && <span className="text-muted-foreground">complete</span>}</p>
             {(rechecked || stage === "verifying") && <p className="flex items-center gap-2">{stage === "verifying" && <Loader2 className="size-3 animate-spin" />}Verifying endpoint integrity [Step 2/2]...{report?.status === "verified" && <span className="text-muted-foreground">2 passes complete</span>}</p>}

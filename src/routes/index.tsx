@@ -15,6 +15,7 @@ import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { AuthDialog } from "@/components/auth-dialog";
 import { AuditScanner } from "@/components/audit-scanner";
 import { DashboardPricing } from "@/components/dashboard-pricing";
+import { DistributedTelemetry } from "@/components/distributed-telemetry";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -156,35 +157,11 @@ function PqcLattice() {
   );
 }
 
-const telemetry = [
-  "node-07 anomaly → schema drift on /charges",
-  "node-07 patch synthesized · verified",
-  "gradient broadcast → 128 nodes",
-  "meta-model updated · Δloss −0.031",
-  "node-42 pre-emptively hardened",
-];
-
-function SelfHealingCore() {
-  const tick = useTick(1400);
-  const visible = Array.from({ length: 5 }, (_, i) => telemetry[(tick + i) % telemetry.length]);
-  return (
-    <div className="space-y-3">
-      <p className="leading-5 text-silver">&gt; One System Fixes, All Nodes Learn</p>
-      <ul className="space-y-1.5">
-        {visible.map((line, i) => (
-          <li key={`${tick}-${i}`} className={`break-words leading-5 ${i === 4 ? "text-silver" : "text-muted-foreground"}`}>
-            [{String((tick + i) % 1000).padStart(3, "0")}] {line}
-          </li>
-        ))}
-      </ul>
-      <p className="text-muted-foreground">loop · learn → share → heal</p>
-    </div>
-  );
-}
-
 function Dashboard() {
   const auth = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const [patchSync, setPatchSync] = useState(false);
+  const [pulseRevision, setPulseRevision] = useState(0);
 
   return (
     <main className="min-h-screen text-foreground">
@@ -225,7 +202,7 @@ function Dashboard() {
       )}
 
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
-        <AuditScanner />
+        <AuditScanner onPatchSync={(syncing, stored) => { setPatchSync(syncing); if (stored) setPulseRevision(value => value + 1); }} />
         <div className="mb-5 flex flex-wrap items-end justify-between gap-4 border-t border-silver/15 pt-7">
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
@@ -259,7 +236,7 @@ function Dashboard() {
             title="Distributed Meta-Learning Self-Healing Core"
             badge="Learning"
           >
-            <SelfHealingCore />
+            <DistributedTelemetry syncing={patchSync} revision={pulseRevision} />
           </Pillar>
         </div>
         <DashboardPricing />
