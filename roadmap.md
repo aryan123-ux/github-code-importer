@@ -12,3 +12,8 @@
 - [ ] Enforce dependency re-check and two signature checks before hotfix generation.
 - [ ] Display real verification stages and fail-closed results in the scanner.
 - [ ] Test verification rules and exercise the scanner end-to-end.
+
+# Private distributed telemetry
+- [ ] Persist only abstract patch vectors with owner-only access.
+- [ ] Connect verified audit recommendations and third-pillar pulse states.
+- [ ] Test privacy rules and verify authenticated telemetry readback.
