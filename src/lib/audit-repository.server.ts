@@ -55,8 +55,8 @@ export async function runVerifiedRepositoryAudit(input: string, commit: string) 
       const sources = snapshot.files.filter(file => /\.(js|jsx|ts|tsx|mjs|cjs)$/.test(file.path) && !/(^|\/)(node_modules|dist|build|vendor)\//.test(file.path) && !/(\.d\.ts|\.(test|spec)\.[jt]sx?)$/.test(file.path));
       if (!contracts.length) throw new Error("No repository OpenAPI/Swagger contracts found. Hotfix blocked.");
       if (contracts.length > 8 || sources.length > 60) throw new Error("Repository exceeds the static audit coverage limit. Hotfix blocked.");
-      const texts = await Promise.all(contracts.map(file => read(fileUrl(snapshot, file.path))));
-      const calls = (await Promise.all(sources.map(async file => extractEndpointCalls(file.path, await read(fileUrl(snapshot, file.path)))))).flat();
+      const texts = await Promise.all(contracts.map(file => read(fileUrl(pinned, file.path))));
+      const calls = (await Promise.all(sources.map(async file => extractEndpointCalls(file.path, await read(fileUrl(pinned, file.path)))))).flat();
       return verifyEndpointSignatures(calls, texts);
     },
     async evidence => {
