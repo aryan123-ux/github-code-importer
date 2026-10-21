@@ -50,6 +50,7 @@ export async function runVerifiedRepositoryAudit(input: string, commit: string) 
     async () => { snapshot = await snapshotRepository(input, commit); },
     async (): Promise<VerifiedEndpoint[]> => {
       if (!snapshot) throw new Error("Dependency verification missing. Hotfix blocked.");
+      const pinned: RepositorySnapshot = snapshot;
       const contracts = snapshot.files.filter(file => /(^|\/)[^/]*(openapi|swagger)[^/]*\.(json|ya?ml)$/i.test(file.path));
       const sources = snapshot.files.filter(file => /\.(js|jsx|ts|tsx|mjs|cjs)$/.test(file.path) && !/(^|\/)(node_modules|dist|build|vendor)\//.test(file.path) && !/(\.d\.ts|\.(test|spec)\.[jt]sx?)$/.test(file.path));
       if (!contracts.length) throw new Error("No repository OpenAPI/Swagger contracts found. Hotfix blocked.");
