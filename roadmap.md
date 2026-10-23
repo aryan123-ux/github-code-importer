@@ -18,3 +18,9 @@
 - [x] Connect verified audit recommendations and third-pillar pulse states.
 - [x] Test abstraction rules, database access restrictions, and signed-out UI.
 - [ ] Verify authenticated telemetry readback and cross-user access: blocked because no account exists; sign in required.
+
+# GitHub repository access and pillar states
+- [ ] Link per-user GitHub authorization while retaining existing app sign-in.
+- [ ] Route authenticated repository audits through each user's GitHub permissions.
+- [ ] Persist and read back owner-private simulated states for all three pillars.
+- [ ] Run behavior tests and verify available authenticated flows.
