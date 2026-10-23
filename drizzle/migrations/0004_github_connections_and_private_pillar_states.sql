@@ -1,0 +1,15 @@
+CREATE TABLE public.app_user_connections (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL, connector_id text NOT NULL CHECK (connector_id = 'github'), connection_key_ciphertext text NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), UNIQUE(user_id, connector_id));
+GRANT ALL ON public.app_user_connections TO service_role;
+REVOKE ALL ON public.app_user_connections FROM anon, authenticated;
+ALTER TABLE public.app_user_connections ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.github_oauth_attempts (nonce uuid PRIMARY KEY, user_id uuid NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+GRANT ALL ON public.github_oauth_attempts TO service_role;
+REVOKE ALL ON public.github_oauth_attempts FROM anon, authenticated;
+ALTER TABLE public.github_oauth_attempts ENABLE ROW LEVEL SECURITY;
+CREATE TABLE public.pillar_states (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), user_id uuid NOT NULL DEFAULT auth.uid(), pillar text NOT NULL CHECK (pillar IN ('monitoring','pqc','meta_learning')), state text NOT NULL CHECK (state IN ('simulation_active','syncing','complete','blocked')), simulation boolean NOT NULL DEFAULT true CHECK (simulation = true), created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT ON public.pillar_states TO authenticated;
+GRANT ALL ON public.pillar_states TO service_role;
+ALTER TABLE public.pillar_states ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Owners read private pillar states" ON public.pillar_states FOR SELECT TO authenticated USING ((SELECT auth.uid()) = user_id);
+CREATE POLICY "Owners insert private simulated pillar states" ON public.pillar_states FOR INSERT TO authenticated WITH CHECK ((SELECT auth.uid()) = user_id AND simulation = true);
+CREATE INDEX pillar_states_owner_created ON public.pillar_states(user_id, created_at DESC);

@@ -3,8 +3,9 @@ import { extractEndpointCalls, recheckDependencies, verifiedSolution, verifyEndp
 
 type TreeEntry = { path: string; type: string; size?: number };
 export type RepositorySnapshot = { repo: string; commit: string; files: TreeEntry[]; dependencies: number };
-async function read(url: string): Promise<string> {
-  const response = await fetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000), headers: { Accept: "application/vnd.github+json" } });
+export type RepositoryFetch = (url: string, init: RequestInit) => Promise<Response>;
+async function read(url: string, repositoryFetch: RepositoryFetch = fetch): Promise<string> {
+  const response = await repositoryFetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000), headers: { Accept: "application/vnd.github+json" } });
   if (!response.ok) throw new Error(`GitHub fetch failed (${response.status}). Use a public repository; check GitHub availability or quota. Hotfix blocked.`);
   if (Number(response.headers.get("content-length") ?? 0) > 2_000_000) throw new Error("Repository file exceeds the audit size limit. Hotfix blocked.");
   if (!response.body) throw new Error("Repository response is empty. Hotfix blocked.");
@@ -26,28 +27,28 @@ async function read(url: string): Promise<string> {
 function fileUrl(snapshot: Pick<RepositorySnapshot, "repo" | "commit">, path: string) {
   return `https://raw.githubusercontent.com/${snapshot.repo}/${snapshot.commit}/${path.split("/").map(encodeURIComponent).join("/")}`;
 }
-export async function snapshotRepository(input: string, pinnedCommit?: string): Promise<RepositorySnapshot> {
+export async function snapshotRepository(input: string, pinnedCommit?: string, repositoryFetch?: RepositoryFetch): Promise<RepositorySnapshot> {
   const normalized = parseGitHubRepository(input);
   if (!normalized) throw new Error("Enter a valid public GitHub repository.");
   const repo = normalized.replace("https://github.com/", "");
-  const revision = pinnedCommit ?? String((JSON.parse(await read(`https://api.github.com/repos/${repo}/commits/HEAD`)) as { sha?: string }).sha ?? "");
+  const revision = pinnedCommit ?? String((JSON.parse(await read(`https://api.github.com/repos/${repo}/commits/HEAD`, repositoryFetch)) as { sha?: string }).sha ?? "");
   if (!/^[a-f0-9]{40}$/.test(revision)) throw new Error("Repository revision cannot be pinned. Hotfix blocked.");
-  const tree = JSON.parse(await read(`https://api.github.com/repos/${repo}/git/trees/${revision}?recursive=1`)) as { tree?: TreeEntry[]; truncated?: boolean };
+  const tree = JSON.parse(await read(`https://api.github.com/repos/${repo}/git/trees/${revision}?recursive=1`, repositoryFetch)) as { tree?: TreeEntry[]; truncated?: boolean };
   if (!Array.isArray(tree.tree) || tree.truncated) throw new Error("Repository tree is incomplete. Hotfix blocked.");
   const snapshot = { repo, commit: revision, files: tree.tree.filter(file => file.type === "blob"), dependencies: 0 };
   for (const path of ["package.json", "package-lock.json"]) if (!snapshot.files.some(file => file.path === path)) throw new Error("Root package.json and npm package-lock v2/v3 are required. Hotfix blocked.");
-  const manifest = await read(fileUrl(snapshot, "package.json"));
-  const first = await read(fileUrl(snapshot, "package-lock.json"));
+  const manifest = await read(fileUrl(snapshot, "package.json"), repositoryFetch);
+  const first = await read(fileUrl(snapshot, "package-lock.json"), repositoryFetch);
   // Immediate uncached re-fetch of the same dependency tree at the pinned commit.
-  const second = await read(fileUrl(snapshot, "package-lock.json"));
+  const second = await read(fileUrl(snapshot, "package-lock.json"), repositoryFetch);
   snapshot.dependencies = recheckDependencies(manifest, first, second);
   return snapshot;
 }
 
-export async function runVerifiedRepositoryAudit(input: string, commit: string) {
+export async function runVerifiedRepositoryAudit(input: string, commit: string, repositoryFetch?: RepositoryFetch) {
   let snapshot: RepositorySnapshot | null = null;
   return verifiedSolution(
-    async () => { snapshot = await snapshotRepository(input, commit); },
+    async () => { snapshot = await snapshotRepository(input, commit, repositoryFetch); },
     async (): Promise<VerifiedEndpoint[]> => {
       if (!snapshot) throw new Error("Dependency verification missing. Hotfix blocked.");
       const pinned: RepositorySnapshot = snapshot;
@@ -55,8 +56,8 @@ export async function runVerifiedRepositoryAudit(input: string, commit: string) 
       const sources = snapshot.files.filter(file => /\.(js|jsx|ts|tsx|mjs|cjs)$/.test(file.path) && !/(^|\/)(node_modules|dist|build|vendor)\//.test(file.path) && !/(\.d\.ts|\.(test|spec)\.[jt]sx?)$/.test(file.path));
       if (!contracts.length) throw new Error("No repository OpenAPI/Swagger contracts found. Hotfix blocked.");
       if (contracts.length > 8 || sources.length > 60) throw new Error("Repository exceeds the static audit coverage limit. Hotfix blocked.");
-      const texts = await Promise.all(contracts.map(file => read(fileUrl(pinned, file.path))));
-      const calls = (await Promise.all(sources.map(async file => extractEndpointCalls(file.path, await read(fileUrl(pinned, file.path)))))).flat();
+      const texts = await Promise.all(contracts.map(file => read(fileUrl(pinned, file.path), repositoryFetch)));
+      const calls = (await Promise.all(sources.map(async file => extractEndpointCalls(file.path, await read(fileUrl(pinned, file.path), repositoryFetch))))).flat();
       return verifyEndpointSignatures(calls, texts);
     },
     async evidence => {

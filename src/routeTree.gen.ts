@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ApiCheckoutRouteImport } from './routes/api/checkout'
+import { Route as ApiPublicGithubReturnRouteImport } from './routes/api/public/github/return'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,50 @@ const ApiCheckoutRoute = ApiCheckoutRouteImport.update({
   path: '/api/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicGithubReturnRoute = ApiPublicGithubReturnRouteImport.update({
+  id: '/api/public/github/return',
+  path: '/api/public/github/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/public/github/return': typeof ApiPublicGithubReturnRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/public/github/return': typeof ApiPublicGithubReturnRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/reset-password': typeof ResetPasswordRoute
   '/api/checkout': typeof ApiCheckoutRoute
+  '/api/public/github/return': typeof ApiPublicGithubReturnRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/reset-password' | '/api/checkout'
+  fullPaths:
+    '/' | '/reset-password' | '/api/checkout' | '/api/public/github/return'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/reset-password' | '/api/checkout'
-  id: '__root__' | '/' | '/reset-password' | '/api/checkout'
+  to: '/' | '/reset-password' | '/api/checkout' | '/api/public/github/return'
+  id:
+    | '__root__'
+    | '/'
+    | '/reset-password'
+    | '/api/checkout'
+    | '/api/public/github/return'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ApiCheckoutRoute: typeof ApiCheckoutRoute
+  ApiPublicGithubReturnRoute: typeof ApiPublicGithubReturnRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +98,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/github/return': {
+      id: '/api/public/github/return'
+      path: '/api/public/github/return'
+      fullPath: '/api/public/github/return'
+      preLoaderRoute: typeof ApiPublicGithubReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +112,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ApiCheckoutRoute: ApiCheckoutRoute,
+  ApiPublicGithubReturnRoute: ApiPublicGithubReturnRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

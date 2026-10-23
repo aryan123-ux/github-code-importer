@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_user_connections: {
+        Row: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_key_ciphertext: string
+          connector_id: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_key_ciphertext?: string
+          connector_id?: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      github_oauth_attempts: {
+        Row: {
+          created_at: string
+          nonce: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          nonce: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          nonce?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       patch_telemetry: {
         Row: {
           created_at: string
@@ -34,6 +79,33 @@ export type Database = {
           id?: string
           patch_vector?: number[]
           simulation?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pillar_states: {
+        Row: {
+          created_at: string
+          id: string
+          pillar: string
+          simulation: boolean
+          state: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pillar: string
+          simulation?: boolean
+          state: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pillar?: string
+          simulation?: boolean
+          state?: string
           user_id?: string
         }
         Relationships: []
