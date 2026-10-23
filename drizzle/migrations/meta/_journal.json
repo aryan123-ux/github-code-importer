@@ -29,6 +29,13 @@
       "when": 1792557014565,
       "tag": "0003_restrict_patch_telemetry_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792730979984,
+      "tag": "0004_github_connections_and_private_pillar_states",
+      "breakpoints": true
     }
   ]
 }
