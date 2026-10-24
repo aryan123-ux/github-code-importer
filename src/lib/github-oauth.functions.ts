@@ -25,9 +25,11 @@ export const startGithubConnect = createServerFn({ method: "POST" }).middleware(
   const { authorizeAppUserOAuth } = await import("@/integrations/lovable/appUserConnector");
   const { getConnectionKeyForUser } = await import("./app-user-connections.server");
   const connectionAPIKey = await getConnectionKeyForUser(context.userId);
-  const result = await authorizeAppUserOAuth({ gatewayBaseUrl: GITHUB_GATEWAY, connectorId: "github", appUserId: context.userId,
-    clientAPIKey, returnUrl: returnUrl.toString(), connectionAPIKey: connectionAPIKey ?? undefined, credentialsConfiguration: { scopes: GITHUB_SCOPES } });
-  return { authorizationUrl: result.authorizationUrl, nonce };
+  // exactOptionalPropertyTypes: omit connectionAPIKey entirely when absent.
+  const authorization = connectionAPIKey
+    ? await authorizeAppUserOAuth({ gatewayBaseUrl: GITHUB_GATEWAY, connectorId: "github", appUserId: context.userId, clientAPIKey, returnUrl: returnUrl.toString(), connectionAPIKey, credentialsConfiguration: { scopes: GITHUB_SCOPES } })
+    : await authorizeAppUserOAuth({ gatewayBaseUrl: GITHUB_GATEWAY, connectorId: "github", appUserId: context.userId, clientAPIKey, returnUrl: returnUrl.toString(), credentialsConfiguration: { scopes: GITHUB_SCOPES } });
+  return { authorizationUrl: authorization.authorizationUrl, nonce };
 });
 
 export const completeGithubConnection = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
