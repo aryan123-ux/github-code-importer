@@ -1,11 +1,13 @@
 import { parseGitHubRepository } from "./dashboard";
 import { extractEndpointCalls, recheckDependencies, verifiedSolution, verifyEndpointSignatures, type VerifiedEndpoint } from "./audit-verification";
+import { githubRequestPath } from "./github-access";
 
 type TreeEntry = { path: string; type: string; size?: number };
 export type RepositorySnapshot = { repo: string; commit: string; files: TreeEntry[]; dependencies: number };
 export type RepositoryFetch = (url: string, init: RequestInit) => Promise<Response>;
 async function read(url: string, repositoryFetch: RepositoryFetch = fetch): Promise<string> {
-  const response = await repositoryFetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000), headers: { Accept: "application/vnd.github+json" } });
+  const { raw } = githubRequestPath(url);
+  const response = await repositoryFetch(url, { redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15000), headers: { Accept: raw ? "application/vnd.github.raw+json" : "application/vnd.github+json" } });
   if (!response.ok) throw new Error(`GitHub fetch failed (${response.status}). Use a public repository; check GitHub availability or quota. Hotfix blocked.`);
   if (Number(response.headers.get("content-length") ?? 0) > 2_000_000) throw new Error("Repository file exceeds the audit size limit. Hotfix blocked.");
   if (!response.body) throw new Error("Repository response is empty. Hotfix blocked.");
@@ -25,7 +27,7 @@ async function read(url: string, repositoryFetch: RepositoryFetch = fetch): Prom
   return new TextDecoder().decode(bytes);
 }
 function fileUrl(snapshot: Pick<RepositorySnapshot, "repo" | "commit">, path: string) {
-  return `https://raw.githubusercontent.com/${snapshot.repo}/${snapshot.commit}/${path.split("/").map(encodeURIComponent).join("/")}`;
+  return `https://api.github.com/repos/${snapshot.repo}/contents/${path.split("/").map(encodeURIComponent).join("/")}?ref=${snapshot.commit}`;
 }
 export async function snapshotRepository(input: string, pinnedCommit?: string, repositoryFetch?: RepositoryFetch): Promise<RepositorySnapshot> {
   const normalized = parseGitHubRepository(input);

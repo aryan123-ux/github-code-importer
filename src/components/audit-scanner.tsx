@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { recheckRepoDependencies, runRepoAudit, type AuditReport } from "@/lib/audit.functions";
 import { parseGitHubRepository } from "@/lib/dashboard";
-import { runPrivatePatchAudit } from "@/lib/patch-telemetry.functions";
+import { recheckPrivateRepoDependencies, runPrivatePatchAudit } from "@/lib/patch-telemetry.functions";
 import { useAuth } from "@/hooks/use-auth";
 
 export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, stored?: boolean) => void }) {
@@ -20,6 +20,8 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
   const recheck = useServerFn(recheckRepoDependencies);
   const audit = useServerFn(runRepoAudit);
   const privateAudit = useServerFn(runPrivatePatchAudit);
+  const privateRecheck = useServerFn(recheckPrivateRepoDependencies);
+  const [logs, setLogs] = useState<{ id: string; pillar: string; state: string }[]>([]);
   const [telemetryError, setTelemetryError] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -30,6 +32,7 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
     setStage(null);
     setRechecked(false);
     setTelemetryError(false);
+    setLogs([]);
     if (!normalized) {
       setError("Enter a GitHub repository URL or owner/repository.");
       return;
@@ -39,7 +42,12 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
     setStage("rechecking");
     setScannedRepo(normalized);
     try {
-      const dependencyResult = await recheck({ data: { repo: normalized } });
+      const dependencyResult = await (async () => {
+        if (!signedIn) return recheck({ data: { repo: normalized } });
+        const result = await privateRecheck({ data: { repo: normalized } });
+        setLogs(result.logs);
+        return result;
+      })();
       if (dependencyResult.status === "blocked") {
         setReport(dependencyResult);
         return;
@@ -50,6 +58,7 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
         onPatchSync(true);
         const result = await privateAudit({ data: { repo: normalized, commit: dependencyResult.commit } });
         setReport(result.report);
+        setLogs(result.logs);
         setTelemetryError(result.telemetry === "failed");
         onPatchSync(false, result.telemetry === "stored");
       } else {
@@ -91,6 +100,7 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
         <div aria-live="polite">
           {error && <p id="audit-error" role="alert" className="mt-3 flex items-center gap-2 text-sm text-destructive"><TriangleAlert className="size-4" />{error}</p>}
           {telemetryError && <p role="alert" className="mt-3 text-xs text-warning">Audit finished, but the private training pulse could not be stored.</p>}
+          {logs.length > 0 && signedIn && <div className="mt-4 border-l border-silver/30 pl-4 font-mono text-xs text-muted-foreground"><p className="mb-2 text-silver">Private execution logs · Simulation · Saved</p>{logs.map(log => <p key={log.id}>{log.pillar} / {log.state}</p>)}</div>}
           {(busy || report) && <div role="status" className="mt-5 space-y-2 border-l border-silver/30 pl-4 font-mono text-xs text-silver">
             <p className="flex items-center gap-2">{stage === "rechecking" && <Loader2 className="size-3 animate-spin" />}Rechecking code matrix [Step 1/2]...{rechecked && <span className="text-muted-foreground">complete</span>}</p>
             {(rechecked || stage === "verifying") && <p className="flex items-center gap-2">{stage === "verifying" && <Loader2 className="size-3 animate-spin" />}Verifying endpoint integrity [Step 2/2]...{report?.status === "verified" && <span className="text-muted-foreground">2 passes complete</span>}</p>}

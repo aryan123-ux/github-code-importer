@@ -7,3 +7,10 @@ test("private repository file requests stay pinned through GitHub API", () => {
   assert.throws(() => githubRequestPath("https://evil.example/repos/owner/repo/git/trees/HEAD"));
   assert.throws(() => githubRequestPath("https://raw.githubusercontent.com/owner/repo/HEAD/package.json"));
 });
+
+test("public package.json reads use GitHub contents API at a pinned commit", () => {
+  const commit = "b".repeat(40);
+  assert.deepEqual(githubRequestPath(`https://api.github.com/repos/owner/repo/contents/package.json?ref=${commit}`), {
+    path: `/repos/owner/repo/contents/package.json?ref=${commit}`, raw: true,
+  });
+});
