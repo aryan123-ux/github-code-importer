@@ -8,8 +8,8 @@ test("scanner fetches public package.json via GitHub API and immediately recheck
   const snapshot = await snapshotRepository("owner/repo", commit, async (url, init) => {
     requests.push({ url, accept: new Headers(init.headers).get("Accept") });
     if (url.includes("/git/trees/")) return Response.json({ tree: [{ path: "package.json", type: "blob" }, { path: "package-lock.json", type: "blob" }] });
-    if (url.includes("/contents/package.json")) return Response.json({ dependencies: {} });
-    if (url.includes("/contents/package-lock.json")) return Response.json({ lockfileVersion: 3, packages: { "": { dependencies: {} } } });
+    if (url.includes("/contents/package.json")) return Response.json({ dependencies: { example: "1.0.0" } });
+    if (url.includes("/contents/package-lock.json")) return Response.json({ lockfileVersion: 3, packages: { "": { dependencies: { example: "1.0.0" } }, "node_modules/example": { version: "1.0.0" } } });
     throw new Error("Unexpected request");
   });
   assert.equal(snapshot.commit, commit);

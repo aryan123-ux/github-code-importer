@@ -42,8 +42,12 @@ export function AuditScanner({ onPatchSync }: { onPatchSync: (syncing: boolean, 
     setStage("rechecking");
     setScannedRepo(normalized);
     try {
-      const dependencyResult = signedIn ? await privateRecheck({ data: { repo: normalized } }) : await recheck({ data: { repo: normalized } });
-      if ("logs" in dependencyResult) setLogs(dependencyResult.logs);
+      const dependencyResult = await (async () => {
+        if (!signedIn) return recheck({ data: { repo: normalized } });
+        const result = await privateRecheck({ data: { repo: normalized } });
+        setLogs(result.logs);
+        return result;
+      })();
       if (dependencyResult.status === "blocked") {
         setReport(dependencyResult);
         return;
