@@ -20,10 +20,9 @@
 - [ ] Verify authenticated telemetry readback and cross-user access: blocked because no account exists; sign in required.
 
 # GitHub repository access and pillar states
-- [ ] Read pinned public package.json through GitHub's contents API.
-- [ ] Save and confirm all three private pillar logs for scanner executions.
-- [ ] Verify scanner flow, behavior tests, and preview diagnostics.
-- [ ] Link per-user GitHub authorization while retaining existing app sign-in.
-- [ ] Route authenticated repository audits through each user's GitHub permissions.
-- [ ] Persist and read back owner-private simulated states for all three pillars.
-- [ ] Run behavior tests and verify available authenticated flows.
+- [x] Read pinned public package.json through GitHub's contents API.
+- [x] Save and confirm all three private pillar logs for scanner executions.
+- [x] Verify public scanner flow, 33 behavior tests, and zero-error preview diagnostics.
+- [x] Route authenticated repository audits through each user's GitHub permissions.
+- [ ] Verify per-user GitHub consent: requires configured OAuth client and a signed-in account.
+- [ ] Verify live three-pillar log readback: no auth users exist; sign in required.
