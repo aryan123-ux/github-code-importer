@@ -17,6 +17,7 @@
 - [x] Persist only abstract patch vectors with owner-only access.
 - [x] Connect verified audit recommendations and third-pillar pulse states.
 - [x] Test abstraction rules, database access restrictions, and signed-out UI.
+- [x] Seal patch vectors with simulated CRYSTALS-Kyber (ML-KEM-768) and show zero-knowledge/PQC status lines on the dashboard.
 - [ ] Verify authenticated telemetry readback and cross-user access: blocked because no account exists; sign in required.
 
 # GitHub repository access and pillar states

@@ -64,6 +64,7 @@ export type Database = {
           created_at: string
           id: string
           patch_vector: number[]
+          pqc_simulation: boolean
           simulation: boolean
           user_id: string
         }
@@ -71,6 +72,7 @@ export type Database = {
           created_at?: string
           id?: string
           patch_vector: number[]
+          pqc_simulation?: boolean
           simulation?: boolean
           user_id?: string
         }
@@ -78,6 +80,7 @@ export type Database = {
           created_at?: string
           id?: string
           patch_vector?: number[]
+          pqc_simulation?: boolean
           simulation?: boolean
           user_id?: string
         }

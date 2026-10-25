@@ -1,0 +1,2 @@
+ALTER TABLE public.patch_telemetry ADD COLUMN pqc_simulation boolean NOT NULL DEFAULT true;
+COMMENT ON COLUMN public.patch_telemetry.pqc_simulation IS 'SIMULATED: marks that the abstract patch vector passed the simulated CRYSTALS-Kyber (ML-KEM-768) encapsulation step. No real encryption or key exchange occurs; telemetry rows remain coarse numeric buckets only.';

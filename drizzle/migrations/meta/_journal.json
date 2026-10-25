@@ -36,6 +36,13 @@
       "when": 1792730979984,
       "tag": "0004_github_connections_and_private_pillar_states",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792900454586,
+      "tag": "0005_patch_telemetry_pqc_simulation",
+      "breakpoints": true
     }
   ]
 }
