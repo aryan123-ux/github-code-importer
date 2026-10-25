@@ -63,26 +63,35 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          patch_vector: number[]
+          kem_ciphertext: string | null
+          key_version: number | null
+          patch_vector: number[] | null
           pqc_simulation: boolean
           simulation: boolean
           user_id: string
+          vector_ciphertext: string | null
         }
         Insert: {
           created_at?: string
           id?: string
-          patch_vector: number[]
+          kem_ciphertext?: string | null
+          key_version?: number | null
+          patch_vector?: number[] | null
           pqc_simulation?: boolean
           simulation?: boolean
           user_id?: string
+          vector_ciphertext?: string | null
         }
         Update: {
           created_at?: string
           id?: string
-          patch_vector?: number[]
+          kem_ciphertext?: string | null
+          key_version?: number | null
+          patch_vector?: number[] | null
           pqc_simulation?: boolean
           simulation?: boolean
           user_id?: string
+          vector_ciphertext?: string | null
         }
         Relationships: []
       }
@@ -110,6 +119,33 @@ export type Database = {
           simulation?: boolean
           state?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      pqc_keys: {
+        Row: {
+          created_at: string
+          id: string
+          key_version: number
+          public_key: string
+          retired_at: string | null
+          secret_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_version: number
+          public_key: string
+          retired_at?: string | null
+          secret_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_version?: number
+          public_key?: string
+          retired_at?: string | null
+          secret_key?: string
         }
         Relationships: []
       }

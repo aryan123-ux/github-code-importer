@@ -28,7 +28,7 @@ export function DistributedTelemetry({ syncing, revision }: { syncing: boolean; 
       <p className="leading-5 text-silver">&gt; One System Fixes, All Nodes Learn</p>
       <p className="text-[10px] uppercase text-muted-foreground">Private telemetry · Simulated training</p>
       <p className="flex items-start gap-2 leading-5 text-silver"><Lock className="mt-0.5 size-3.5 shrink-0" />🔒 Zero-Knowledge Data Isolation Active</p>
-      <p className="text-muted-foreground">PQC Lattice Encrypted · Simulated CRYSTALS-Kyber (ML-KEM-768)</p>
+      <p className="text-muted-foreground">PQC Lattice Encrypted · ML-KEM-768 (CRYSTALS-Kyber)</p>
       {!owner ? <p className="leading-5 text-muted-foreground">Sign in for private patch telemetry.</p> : syncing ? (
         <p className="flex items-start gap-2 leading-5 text-silver"><Loader2 className="mt-0.5 size-3.5 shrink-0 motion-safe:animate-spin" />Syncing Patch Vector to Global Lattice...</p>
       ) : current?.failed ? <p className="leading-5 text-warning">Private telemetry unavailable. No training pulse confirmed.</p> : current?.pulse ? (
