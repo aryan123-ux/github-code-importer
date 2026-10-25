@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { Loader2, Lock, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { getPrivatePatchPulse } from "@/lib/patch-telemetry.functions";
 
