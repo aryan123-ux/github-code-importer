@@ -43,6 +43,13 @@
       "when": 1792900454586,
       "tag": "0005_patch_telemetry_pqc_simulation",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792900679621,
+      "tag": "0006_mlkem_pqc_keys_and_encrypted_vectors",
+      "breakpoints": true
     }
   ]
 }
