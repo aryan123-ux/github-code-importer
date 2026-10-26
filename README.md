@@ -1,4 +1,4 @@
-# Sentinel Glow
+# Api Sentinel
 
 Create a premium, hyper-futuristic full-stack SaaS application for "API Sentinel" from scratch using React, Tailwind CSS (Dark Mode), and modern UI components.
 
