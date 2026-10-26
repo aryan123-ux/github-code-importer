@@ -44,7 +44,7 @@ export async function openVector(sealed: SealedVector, secretKey: Uint8Array): P
   const sharedSecret = ml_kem768.decapsulate(base64ToBytes(sealed.kemCiphertext), secretKey);
   const key = await crypto.subtle.importKey("raw", new Uint8Array(sharedSecret), "AES-GCM", false, ["decrypt"]);
   const packed = base64ToBytes(sealed.vectorCiphertext);
-  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: packed.subarray(0, 12) }, key, packed.subarray(12));
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: packed.slice(0, 12) as Uint8Array<ArrayBuffer> }, key, packed.slice(12) as Uint8Array<ArrayBuffer>);
   const vector: unknown = JSON.parse(new TextDecoder().decode(decrypted));
   if (!Array.isArray(vector) || vector.length !== 3 || vector.some(value => !Number.isInteger(value) || value < 0 || value > 3)) {
     throw new Error("Decapsulated payload is not a valid abstract patch vector.");
