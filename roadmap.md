@@ -2,6 +2,12 @@
 - [x] Add isolated research consoles without restyling existing dashboard.
 - [x] Verify graph, forecast selection, call simulation, and mobile layout.
 
+# Saved API dashboard
+- [ ] Add owner-private monitored APIs, modal creation, and live updates.
+- [ ] Share existing authentication state across routes.
+- [ ] Verify saved API creation and readback in the signed-in dashboard.
+- [ ] GitHub account sign-in: unsupported by Lovable Cloud; retain existing supported sign-in.
+
 # Primary dashboard
 - [x] Restore repository scanner and connect existing audit action.
 - [x] Preserve three terminal pillars and restore two-column pricing.

@@ -59,6 +59,33 @@ export type Database = {
         }
         Relationships: []
       }
+      monitored_apis: {
+        Row: {
+          check_interval: number
+          created_at: string
+          endpoint_url: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          check_interval?: number
+          created_at?: string
+          endpoint_url: string
+          id?: string
+          name: string
+          user_id?: string
+        }
+        Update: {
+          check_interval?: number
+          created_at?: string
+          endpoint_url?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       patch_telemetry: {
         Row: {
           created_at: string
