@@ -15,3 +15,5 @@
 - Keep repository fetching in a server-only helper using bounded fixed-host requests; require dependency re-check and two fresh contract signature checks before returning any solution, including direct audit RPC calls.
 - Persist patch pulses through authenticated audit orchestration using the caller's RLS client and claim-derived owner; store only coarse numeric vectors and read only owner-scoped rows, so telemetry never pools tenant content. Public audits remain untracked; pulse completion requires database readback and means simulation, not real model training.
 - Read pinned repository files through GitHub's contents API; authenticated scanner stages save and read back all three owner-private simulated pillar states so failed attempts are logged without code or repository content.
+- Mount authentication once inside the root QueryClient provider so all routes share identity and clear private query caches on sign-out.
+- Manage monitored APIs through the generated browser client with owner-only RLS, owner-keyed Query caches, and cleaned-up Realtime subscriptions; keep interval configuration distinct from actual uptime checks.

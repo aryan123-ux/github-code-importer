@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -62,6 +64,8 @@ function describeAuthError(raw: string): string {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -107,6 +111,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) void loadProfile(session.user);
       else setProfile(null);
+      void router.invalidate();
+      if (event === "SIGNED_OUT") queryClient.clear();
+      else void queryClient.invalidateQueries();
     });
     return () => data.subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,6 +191,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     signOut: async () => {
       setAuthError(null);
+      await queryClient.cancelQueries();
+      queryClient.clear();
       await supabase.auth.signOut();
       setProfile(null);
     },

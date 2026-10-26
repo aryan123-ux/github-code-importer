@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AuthProvider, useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
+import { MonitoredApis } from "@/components/monitored-apis";
 import { AuthDialog } from "@/components/auth-dialog";
 import { AuditScanner } from "@/components/audit-scanner";
 import { DashboardPricing } from "@/components/dashboard-pricing";
@@ -40,11 +41,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  return (
-    <AuthProvider>
-      <Dashboard />
-    </AuthProvider>
-  );
+  return <Dashboard />;
 }
 
 function useTick(ms: number): number {
@@ -98,31 +95,6 @@ function Pillar({
         {children}
       </div>
     </section>
-  );
-}
-
-const endpoints = ["stripe/v1", "openai/v1", "twilio/2010", "aws/sts", "github/rest", "slack/web"];
-
-function MonitoringCore() {
-  const tick = useTick(1500);
-  return (
-    <ul className="space-y-2">
-      {endpoints.map((name, i) => {
-        const latency = 40 + ((tick * 7 + i * 23) % 90);
-        return (
-          <li key={name} className="flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <span className="signal-pulse size-1.5 rounded-full bg-silver" />
-              {name}
-            </span>
-            <span className="text-muted-foreground">
-              200 · <span className="text-silver">{latency}ms</span>
-            </span>
-          </li>
-        );
-      })}
-      <li className="pt-3 text-muted-foreground">uptime 99.999% · scan #{1024 + tick}</li>
-    </ul>
   );
 }
 
@@ -218,9 +190,9 @@ function Dashboard() {
             index="01"
             icon={<Activity className="size-4" />}
             title="24/7 Continuous API Surface Monitoring Core"
-            badge="Live tracker"
+            badge="Saved APIs"
           >
-            <MonitoringCore />
+            <MonitoredApis onSignIn={() => setAuthOpen(true)} />
           </Pillar>
           <Pillar
             index="02"
