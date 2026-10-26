@@ -60,14 +60,14 @@ export function MonitoredApis({ onSignIn }: { onSignIn: () => void }) {
     setFormError(null); save.mutate(result.data);
   };
   return (
-    <section className="mt-7 border-t border-silver/15 pt-6" aria-label="Monitored APIs">
+    <section aria-label="Monitored APIs">
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h3 className="flex items-center gap-2 text-sm font-semibold"><Activity className="size-4 text-silver" /> Monitored APIs</h3>
         <Button variant="terminal" size="sm" onClick={() => { setFormError(null); if (!user) onSignIn(); else setOpen(true); }}><Plus className="size-4" /> Add New API</Button>
       </header>
       {!user ? <p className="text-sm text-muted-foreground">Sign in to save your APIs.</p> : apis.isPending ? <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin" /> Loading APIs…</p> : apis.isError ? <div className="flex items-center gap-3 text-sm text-destructive">Could not load APIs.<Button variant="ghost" size="sm" onClick={() => void apis.refetch()}><RefreshCw className="size-4" /> Retry</Button></div> : !apis.data?.length ? <p className="text-sm text-muted-foreground">No APIs added yet.</p> : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {apis.data.map(api => <article key={api.id} className="min-w-0 rounded-md border border-silver/20 bg-terminal-panel p-4">
+        <div className="space-y-4">
+          {apis.data.map(api => <article key={api.id} className="min-w-0 border-b border-silver/20 pb-4">
             <h4 className="break-words text-sm font-semibold">{api.name}</h4>
             <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{api.endpoint_url}</p>
             <div className="mt-4 flex flex-wrap justify-between gap-2 font-mono text-[10px] text-silver"><span>Interval · {api.check_interval}s</span><span className="text-muted-foreground">Not checked</span></div>
