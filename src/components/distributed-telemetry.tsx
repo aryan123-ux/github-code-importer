@@ -35,7 +35,7 @@ export function DistributedTelemetry({ syncing, revision }: { syncing: boolean; 
         <>
           <p className="flex items-start gap-2 leading-5 text-silver"><ShieldCheck className="mt-0.5 size-3.5 shrink-0" />Distributed Meta-Learning Complete: All Node Frameworks Upgraded</p>
           <p className="text-muted-foreground">Simulation only · No frameworks changed</p>
-          <p className="break-words text-muted-foreground">Abstract vector [{current.pulse.patch_vector.join(" · ")}]{current.pulse.pqc_simulation ? " · PQC-sealed (simulated)" : ""}</p>
+          <p className="break-words text-muted-foreground">Abstract vector [{(current.pulse.patch_vector ?? []).join(" · ")}]{current.pulse.pqc_simulation ? " · PQC-sealed (simulated)" : " · ML-KEM-768 sealed"}</p>
         </>
       ) : <p className="leading-5 text-muted-foreground">Awaiting verified patch recommendation.</p>}
       <p className="text-muted-foreground">Owner-only pulse · No cross-tenant training</p>

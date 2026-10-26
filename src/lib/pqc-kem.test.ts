@@ -20,7 +20,7 @@ test("tampered ciphertext fails authenticated decryption", async () => {
   const keypair = generatePqcKeypair();
   const sealed = await sealVector([2, 0, 3], keypair.publicKey);
   const packed = base64ToBytes(sealed.vectorCiphertext);
-  packed[packed.length - 1] ^= 1;
+  packed[packed.length - 1] = (packed[packed.length - 1] ?? 0) ^ 1;
   await assert.rejects(() => openVector({ ...sealed, vectorCiphertext: bytesToBase64(packed) }, keypair.secretKey));
 });
 

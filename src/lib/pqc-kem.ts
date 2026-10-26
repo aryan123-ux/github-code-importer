@@ -2,7 +2,7 @@
 // Pure-JS via @noble/post-quantum + WebCrypto AES-GCM: runs on the serverless
 // runtime and in tests. Only coarse numeric vectors are ever sealed — no tenant
 // code, paths, repo identifiers, or prompts cross this boundary.
-import { ml_kem768 } from "@noble/post-quantum/ml-kem";
+import { ml_kem768 } from "@noble/post-quantum/ml-kem.js";
 
 export type PqcKeypair = { publicKey: Uint8Array; secretKey: Uint8Array };
 export type SealedVector = { kemCiphertext: string; vectorCiphertext: string };
@@ -30,7 +30,7 @@ export async function sealVector(vector: number[], publicKey: Uint8Array): Promi
     throw new Error("Only abstract three-bucket patch vectors may be sealed.");
   }
   const { cipherText, sharedSecret } = ml_kem768.encapsulate(publicKey);
-  const key = await crypto.subtle.importKey("raw", sharedSecret as BufferSource, "AES-GCM", false, ["encrypt"]);
+  const key = await crypto.subtle.importKey("raw", new Uint8Array(sharedSecret), "AES-GCM", false, ["encrypt"]);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const plaintext = new TextEncoder().encode(JSON.stringify(vector));
   const encrypted = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, plaintext));
@@ -42,9 +42,9 @@ export async function sealVector(vector: number[], publicKey: Uint8Array): Promi
 
 export async function openVector(sealed: SealedVector, secretKey: Uint8Array): Promise<number[]> {
   const sharedSecret = ml_kem768.decapsulate(base64ToBytes(sealed.kemCiphertext), secretKey);
-  const key = await crypto.subtle.importKey("raw", sharedSecret as BufferSource, "AES-GCM", false, ["decrypt"]);
+  const key = await crypto.subtle.importKey("raw", new Uint8Array(sharedSecret), "AES-GCM", false, ["decrypt"]);
   const packed = base64ToBytes(sealed.vectorCiphertext);
-  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: packed.subarray(0, 12) }, key, packed.subarray(12));
+  const decrypted = await crypto.subtle.decrypt({ name: "AES-GCM", iv: packed.slice(0, 12) as Uint8Array<ArrayBuffer> }, key, packed.slice(12) as Uint8Array<ArrayBuffer>);
   const vector: unknown = JSON.parse(new TextDecoder().decode(decrypted));
   if (!Array.isArray(vector) || vector.length !== 3 || vector.some(value => !Number.isInteger(value) || value < 0 || value > 3)) {
     throw new Error("Decapsulated payload is not a valid abstract patch vector.");
